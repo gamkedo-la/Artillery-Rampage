@@ -17,7 +17,7 @@ var weapons: Array[Weapon]:
 			push_warning("PlayerState: weapons already set - clearing - possible memory leak!")
 		_weapons.clear()
 		_weapons.resize(value.size())
-		# Make sure copy doesn't retain parent reference
+	# Make sure copy doesn't retain parent reference
 		for i in range(value.size()):
 			_weapons[i] = value[i].duplicate()
 			var w: Weapon = _weapons[i]

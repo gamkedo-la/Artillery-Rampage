@@ -8,14 +8,6 @@ func _ready():
 	Juice.fade_in(self, Juice.SLOW, Color.BLACK)
 
 func _on_retry_pressed():
-	# Moved to save_state_manager.gd
-	#PlayerStateManager.enable = true
-	#StorySaveUtils.new_story_save()
-	#SaveStateManager.add_state_flag(SceneManager.new_story_selected)
-	#SceneManager.play_mode = SceneManager.PlayMode.STORY
-#
-	#SceneManager.switch_scene_keyed(SceneManager.SceneKeys.StoryStart)
-	
 	SaveStateManager.start_new_story_with_new_save()
 	disable_buttons()
 

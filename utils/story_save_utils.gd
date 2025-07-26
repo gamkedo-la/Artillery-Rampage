@@ -22,6 +22,9 @@ static func get_story_save(save:SaveState = null, add_parent_if_not_exists:bool 
 
 static func delete_story_save() -> void:
 	SaveStateManager.clear_save_state_by_key(StoryLevelState.SAVE_STATE_KEY)
+	# Ensure that player upgrades and player state are cleared out correctly in memory
+	PlayerUpgrades.clear()
+	PlayerStateManager.clear()
 
 static func new_story_save() -> void:
 	delete_story_save()

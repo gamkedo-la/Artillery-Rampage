@@ -12,7 +12,7 @@ var enable:bool:
 		else:
 			print_debug("disable")
 			_disconnect_events()
-			_clear_state()
+			clear()
 	get:
 		return enable
 
@@ -20,7 +20,7 @@ var player: Player
 var player_state: PlayerState
 var _dirty:bool
 	
-func _clear_state()->void:
+func clear() -> void:
 	player = null
 	player_state = null
 	_dirty = false
@@ -95,11 +95,11 @@ func _snapshot_player_state(include_curr_health:bool) -> void:
 
 func restore_from_save_state(save: SaveState) -> void:
 	if not enable:
-		_clear_state()
+		clear()
 		return
 	if SaveStateManager.consume_state_flag(SceneManager.new_story_selected, &"player"):
 		PlayerState.delete_save_state(StorySaveUtils.get_story_save(save))
-		_clear_state()
+		clear()
 		return
 	if _dirty:
 		# We need to save state first

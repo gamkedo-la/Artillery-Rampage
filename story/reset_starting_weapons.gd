@@ -9,9 +9,10 @@ func _ready() -> void:
 	# Skip if precompiler running
 	if SceneManager.is_precompiler_running:
 		return
-	GameEvents.level_loaded.connect(_on_level_loaded)
+	# Level has already been loaded
+	_on_init(SceneManager.get_current_level_root())
 
-func _on_level_loaded(level:GameLevel) -> void:
+func _on_init(level:GameLevel) -> void:
 	# Assumes that we only save when completing a level
 	_level = level
 

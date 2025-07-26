@@ -99,15 +99,6 @@ func _on_new_story_canceled() -> void:
 	confirmation_dialog.canceled.disconnect(_on_new_story_canceled)
 	
 func _new_story() -> void:
-	# Moved to save_state_manager.gd
-	#PlayerStateManager.enable = true
-	#StorySaveUtils.new_story_save()
-	#SaveStateManager.add_state_flag(SceneManager.new_story_selected)
-#
-	#SceneManager.play_mode = SceneManager.PlayMode.STORY
-#
-	#SceneManager.switch_scene_keyed(SceneManager.SceneKeys.StoryStart, 0.0)
-	
 	SaveStateManager.start_new_story_with_new_save()
 	_disable_buttons()
 

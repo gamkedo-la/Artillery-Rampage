@@ -12,7 +12,8 @@ func _ready() -> void:
 
 	_story_level = SceneManager.current_story_level
 	if _story_level:
-		GameEvents.level_loaded.connect(_on_level_loaded)
+		# Level has already been loaded
+		_on_init(SceneManager.get_current_level_root())
 	else:
 		push_error("%s: current story level NULL when in story mode!" % [name])
 
@@ -44,8 +45,8 @@ func _get_ai_config_by_difficulty(story_level: StoryLevel, difficulty: Difficult
 	
 	return null
 
-func _on_level_loaded(level:GameLevel) -> void:
-	print_debug("%s: on_level_loaded: %s" % [name, level.level_name])
+func _on_init(level:GameLevel) -> void:
+	print_debug("%s: _on_init: %s" % [name, level.level_name])
 
 	_artillery_spawner = level.spawner
 

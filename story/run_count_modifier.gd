@@ -18,23 +18,26 @@ func _ready() -> void:
 
 	_story_level = SceneManager.current_story_level
 	if _story_level:
-		GameEvents.level_loaded.connect(_on_level_loaded)
+		# Level has already been loaded
+		_on_init(SceneManager.get_current_level_root())
 	else:
 		push_error("%s: current story level NULL when in story mode!" % [name])
 
-func _on_level_loaded(level: GameLevel) -> void:
-	print_debug("%s: on_level_loaded: %s" % [name, level.level_name])
+func _on_init(level: GameLevel) -> void:
+	print_debug("%s: _on_init: %s" % [name, level.level_name])
 
 	_artillery_spawner = level.spawner
 	
-	# HACK: To workaround the story level state being restored after the level is loaded
-	# so need to wait an additional frame
-	await get_tree().process_frame
-	
-	_modify_artillery_spawner(_artillery_spawner)
+	# HACK: We need to wait for the story level state to be restored prior to modifying artillery
+	# However, if we wait a frame it's too late as the artillery already spawned
+	GameEvents.save_state_restored.connect(_on_save_state_restored.unbind(2))
 
 	# Need to modify the counts given the new difficulty	
 	GameEvents.difficulty_changed.connect(_on_difficulty_changed)
+	
+func _on_save_state_restored() -> void:
+	_modify_artillery_spawner(_artillery_spawner)
+	GameEvents.save_state_restored.disconnect(_on_save_state_restored)
 	
 func _modify_artillery_spawner(spawner: ArtillerySpawner) -> void:
 	var story_level_state:StoryLevelState = SceneManager.story_level_state

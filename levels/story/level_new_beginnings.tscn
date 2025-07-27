@@ -88,7 +88,7 @@ day_length = 120.0
 presets_queue = Array[ExtResource("5_21x2i")]([SubResource("Resource_876hk"), SubResource("Resource_jfhj8")])
 
 [node name="Player" parent="GameLevel" instance=ExtResource("6_jwug6")]
-position = Vector2(120, 427)
+position = Vector2(142, 427)
 enable_damage_before_first_turn = false
 
 [node name="Enemy" parent="GameLevel" instance=ExtResource("6_6eq0i")]
@@ -99,7 +99,7 @@ enable_damage_before_first_turn = false
 color = Color(0.1, 0.175, 1, 1)
 
 [node name="Lighthouse" parent="GameLevel" instance=ExtResource("7_yscme")]
-position = Vector2(48, 442)
+position = Vector2(1175, 442)
 
 [node name="ShatterableRock" parent="GameLevel" instance=ExtResource("8_6eq0i")]
 position = Vector2(793, 446)
@@ -108,7 +108,7 @@ position = Vector2(793, 446)
 position = Vector2(933, 435)
 
 [node name="ShatterableRock2" parent="GameLevel" instance=ExtResource("9_21x2i")]
-position = Vector2(1109, 437)
+position = Vector2(63, 439)
 
 [editable path="GameLevel"]
 [editable path="GameLevel/ScreenShakeCamera2D"]

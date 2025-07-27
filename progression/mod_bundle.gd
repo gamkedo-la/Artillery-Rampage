@@ -50,8 +50,8 @@ func apply_all_mods(weapons:Array[Weapon]) -> void:
 	var weapons_by_key:Dictionary[String, Weapon] = {}
 
 	for weapon in weapons:
-			var key:String = weapon.scene_file_path
-			weapons_by_key[key] = weapon
+		var key:String = weapon.scene_file_path
+		weapons_by_key[key] = weapon
 
 	for mod in components_weapon_mods:
 		var mod_key:String =  mod.target_weapon_scene_path
@@ -63,11 +63,9 @@ func apply_all_mods(weapons:Array[Weapon]) -> void:
 		var mods:Array = mods_by_weapon_key[mod_key]
 		var weapon:Weapon = weapons_by_key.get(mod_key)
 		if not weapon:
-			push_warning("ModBundle: Could not find weapon for key=%s" % mod_key)
+			# This is not a warning since player may no longer have the weapon if retain when empty is false
+			print_debug("ModBundle: Skip - Could not find weapon for key=%s" % mod_key)
 			continue
-		# function no longer exists!
-		#weapon.apply_mod(mod)
-		#mod.modify_weapon(weapon)
 		weapon.attach_mods(mods, true)
 
 ## Was looking for the most efficient random bool method and came across a discussion;

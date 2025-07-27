@@ -129,7 +129,7 @@ WobbleModifier = Dictionary[int, ExtResource("4_1lmxp")]({
 [node name="FallDamageModifier" type="Node" parent="."]
 script = ExtResource("4_dvlup")
 disable_fall_damage = Dictionary[int, bool]({
-0: true,
+0: false,
 1: false,
 2: false
 })

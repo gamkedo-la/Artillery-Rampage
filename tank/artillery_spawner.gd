@@ -294,6 +294,7 @@ func _choose_starting_weapons() -> Array[PackedScene]:
 func _attach_weapons(attach_to:TankController,weapon_scenes:Array[PackedScene]) -> void:
 	# TankController will update each call because it expects them all at once.
 	var weapons: Array[Weapon]
+	attach_to.remove_all_weapons(true)
 	for w in weapon_scenes:
 		if w.can_instantiate():
 			var instance = w.instantiate() as Weapon

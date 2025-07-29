@@ -687,12 +687,21 @@ func select_best_weapon(opponent_data: Dictionary, weapon_infos: Array[AIBehavio
 		else:
 			push_warning("%s(%s): weapon(%d)=%s did not match a handler and will be ignored" % [name, tank.owner.name,i, weapon.name])
 
+	var chosen_weapon_index:int
+
 	if best_weapon != -1:
 		print_debug("%s(%s): selected best_weapon=%d/%d; score=%f" % [name, tank.owner.name, best_weapon, weapon_infos.size(), best_score])
-		return best_weapon
-	
-	# Fallback to random weapon
-	print_debug("%s(%s): Could not find viable weapon - falling back to random selection out of %d candidates" % [name, tank.owner.name, tank.weapons.size()])
+		chosen_weapon_index = best_weapon
+	else:
+		# Fallback to random weapon
+		print_debug("%s(%s): Could not find viable weapon - falling back to random selection out of %d candidates" % [name, tank.owner.name, tank.weapons.size()])
+		chosen_weapon_index = randi_range(0, tank.weapons.size() - 1)
 
-	return randi_range(0, tank.weapons.size() - 1)
+	# Notify the scorers that weapon was chosen
+	var chosen_info:WeaponInfo = weapon_infos[chosen_weapon_index]
+	var chosen_weapon_scorer:WeaponScorer = weapon_handlers.get(chosen_info.weapon)
+	if chosen_weapon_scorer:
+		chosen_weapon_scorer.on_chosen(chosen_info.weapon, chosen_info.projectile_prototype)
+
+	return chosen_weapon_index
 #endregion

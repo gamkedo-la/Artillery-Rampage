@@ -21,6 +21,8 @@ func apply_all_upgrades(weapons: Array[Weapon]) -> void:
 		bundle.apply_all_mods(weapons)
 
 func acquire_upgrade(mod_bundle:ModBundle) -> void:
+	if not mod_bundle:
+		return
 	acquired_upgrade_sound.play()
 	_on_acquired_upgrade(mod_bundle)
 	
@@ -102,29 +104,64 @@ func update_save_state(save:SaveState) -> void:
 
 
 static func generate_random_upgrade(types:Array[ModBundle.Types], layers:int = 1, chance_bias:int = 0) -> ModBundle:
-	var upgrade = ModBundle.new()
-
-	# More than 1 layer means multiple Mods in a ModBundle. Use for 'rarity'.
-	# Chance bias pushes the probability more toward buff or de-buff. Use for shop
-	upgrade.randomize(types, layers, chance_bias)
-
 	var player_state:PlayerState = PlayerStateManager.player_state
 	if not player_state:
 		push_error("PlayerUpgrades: No player state available to determine available inventory to apply the generate mod bundle to")
-		return upgrade
+		return null
+
+	var weapons_inventory:Array[Weapon] = player_state.weapons
+	if not weapons_inventory:
+		push_error("PlayerUpgrades: Player state has empty weapons!")
+		return null
+
+	var selected_weapon:Weapon = _get_random_weighted_weapon(weapons_inventory)
+	if not selected_weapon:
+		push_warning("PlayerUpgrades: No available weapons with mods enabled")
+		return null
 
 	# select a random weapon to apply the upgrades to if there is a ModWeapon
+	var upgrade = ModBundle.new()
+	# More than 1 layer means multiple Mods in a ModBundle. Use for 'rarity'.
+	# Chance bias pushes the probability more toward buff or de-buff. Use for shop
+	upgrade.randomize(types, layers, false, chance_bias, selected_weapon.supported_mods)
+
 	if upgrade.components_weapon_mods:
-		var weapons_inventory:Array[Weapon] = player_state.weapons
-		if not weapons_inventory:
-			push_error("PlayerUpgrades: Player state has empty weapons!")
-			return upgrade
-
-		var selected_weapon:Weapon = weapons_inventory.pick_random()
-
 		for weapon_mod in upgrade.components_weapon_mods:
 			print_debug("PlayerUpgrades: Applying weapon mod to %s" % selected_weapon.display_name)
 			weapon_mod.target_weapon_name = selected_weapon.display_name
 			weapon_mod.target_weapon_scene_path = selected_weapon.scene_file_path
+		return upgrade
+	return null
 
-	return upgrade
+static func _get_random_weighted_weapon(weapons_inventory: Array[Weapon]) -> Weapon:
+	var weapon_weights := _get_weapon_mod_weights(weapons_inventory)
+	
+	var total_weight:int = 0
+	for weight in weapon_weights:
+		total_weight += weight
+	
+	if total_weight == 0:
+		push_warning("PlayerUpgrades: No weapons have any mods enabled!")
+		return null
+
+	var selected_weight_upper_bound:int = randi_range(1, total_weight)
+
+	var selected_weapon:Weapon = null
+	var weight_sum:int = 0
+	for i in weapons_inventory.size():
+		var weight:int = weapon_weights[i]
+		weight_sum += weight
+		if weight_sum >= selected_weight_upper_bound:
+			selected_weapon = weapons_inventory[i]
+			break
+	
+	return selected_weapon
+
+static func _get_weapon_mod_weights(weapons_inventory: Array[Weapon]) -> PackedInt32Array:
+	var weapon_weights:PackedInt32Array = []
+	weapon_weights.resize(weapons_inventory.size())
+
+	for i in weapon_weights.size():
+		var weapon:Weapon = weapons_inventory[i]
+		weapon_weights[i] = ModUtils.num_supported_mods(weapon.supported_mods)
+	return weapon_weights

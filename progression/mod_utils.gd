@@ -52,3 +52,24 @@ static func sort_by_target_weapon(a, b, ascending:bool = true) -> bool:
 			return a_weapon.property_to_display_string() > b_weapon.property_to_display_string()
 		else:
 			return a_weapon.target_weapon_name > b_weapon.target_weapon_name
+
+#region Mod Flags
+static func supported_mods_to_bundle_types(supported_mods_flags:int, num_types:int) -> Array[int]:
+	var types:Array[int] = []
+
+	for i in num_types + 1:
+		if supported_mods_flags & (1 << i):
+			types.push_back(i)
+	return types
+
+static func num_supported_mods(supported_mods_flags:int) -> int:
+	var count:int = 0
+	var flags:int = supported_mods_flags
+	
+	# Brian Kernighan's algorithm for counting set bits
+	while flags != 0:
+		flags &= flags - 1
+		count += 1
+	return count
+
+#endregion

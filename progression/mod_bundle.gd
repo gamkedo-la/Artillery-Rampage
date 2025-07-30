@@ -44,7 +44,6 @@ var target_weapon:String:
 ## apply mods where they need to go
 ## weapons hold projectile mods to apply at spawn time
 func apply_all_mods(weapons:Array[Weapon]) -> void:
-	
 	# Group by weapon name and then add the mods to the list for the weapon and apply
 	var mods_by_weapon_key:Dictionary[String, Array] = {}
 	var weapons_by_key:Dictionary[String, Weapon] = {}
@@ -73,7 +72,7 @@ func apply_all_mods(weapons:Array[Weapon]) -> void:
 ## -- This method via Chaosus on Github Godot issues #8721
 func chance(probability: int = 50) -> bool: return true if (randi() % 100) < probability else false
 
-func randomize(selectable_types:Array[ModBundle.Types], number_of_mods:int = 1, clearall:bool = true, chance_bias:int = 0) -> void:
+func randomize(selectable_types:Array[ModBundle.Types], number_of_mods:int = 1, clearall:bool = true, chance_bias:int = 0, supported_mods_flags:int = 0xFFFFFFFF) -> void:
 	if clearall: clear_all()
 	
 	for i in number_of_mods:
@@ -86,16 +85,18 @@ func randomize(selectable_types:Array[ModBundle.Types], number_of_mods:int = 1, 
 		
 		match type:
 			Types.WEAPON:
-				mod = _new_rand_mod_weapon(chance_bias)
-				components_weapon_mods.append(mod)
+				mod = _new_rand_mod_weapon(chance_bias, supported_mods_flags)
+				if mod:
+					components_weapon_mods.append(mod)
 				
 			Types.PROJECTILE:
 				# TODO Not implemented!
 				#mod = _new_rand_mod_projectile(chance_bias)
 				#components_projectile_mods.append(mod)
 				
-				mod = _new_rand_mod_weapon(chance_bias)
-				components_weapon_mods.append(mod)
+				mod = _new_rand_mod_weapon(chance_bias, supported_mods_flags)
+				if mod:
+					components_weapon_mods.append(mod)
 				
 			#Types.TANK:
 				#pass
@@ -104,8 +105,9 @@ func randomize(selectable_types:Array[ModBundle.Types], number_of_mods:int = 1, 
 			#Types.WORLD:
 				#pass
 			_:
-				mod = _new_rand_mod_weapon(chance_bias)
-				components_weapon_mods.append(mod)
+				mod = _new_rand_mod_weapon(chance_bias, supported_mods_flags)
+				if mod:
+					components_weapon_mods.append(mod)
 	
 func clear_all() -> void:
 	components_weapon_mods.clear()
@@ -114,11 +116,16 @@ func clear_all() -> void:
 	#component_player_mods.clear()
 	#component_world_mods.clear()
 
-func _new_rand_mod_weapon(chance_bias:int = 0) -> ModWeapon:
-	var mod = ModWeapon.new()
-	var type:int = randi_range(0, 5) if chance(50) else randi_range(0, 4) ## Nerf unlimited ammo frequency
-	var buff:bool # Buff or debuff. Probability is set per type.
+func _new_rand_mod_weapon(chance_bias:int = 0, supported_mods_flags:int = 0xFFFFFFFF) -> ModWeapon:
+	var max_type:int = 5 if chance(50) else 4 ## Nerf unlimited ammo frequency
+	var available_types:Array[int] = ModUtils.supported_mods_to_bundle_types(supported_mods_flags,max_type)
+	if not available_types:
+		return null
+	var type:int = available_types.pick_random()
 	
+	var buff:bool # Buff or debuff. Probability is set per type.
+	var mod = ModWeapon.new()
+
 	match type:
 		0:
 			## Accuracy

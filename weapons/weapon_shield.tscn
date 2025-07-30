@@ -12,6 +12,7 @@ trajectory_indicator_type = 0
 accuracy_angle_spread = 0.0349066
 power_launch_speed_mult = 0.0
 supports_wobble = false
+supported_mods = 48
 retain_when_empty = false
 use_ammo = true
 current_ammo = 2

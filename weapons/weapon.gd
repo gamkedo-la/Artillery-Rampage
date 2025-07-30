@@ -138,6 +138,14 @@ var current_barrel: int = 0
 ## Some weapons like the shield and parachute are not aimed so shouldn't have wobble.
 @export var supports_wobble:bool = true
 
+@export_flags(
+	"Accuracy Angle Spread", "Always Shoot for Count",
+	"Number of Scenes to Spawn", "Power Launch Speed Multiplier",
+	"Retain when Empty", "Use ammo"
+)
+# Set to all by default by setting all the mask bits
+var supported_mods:int = (1 << 6) - 1
+
 @export_group("Ammo")
 ## If false, call [method destroy] once out of ammo (and magazines, if configured).
 @export var retain_when_empty: bool = true

@@ -10,6 +10,7 @@ display_name = "Parachute"
 description = "Readies a parachute that deploys the next time the player falls to prevent fall damage."
 trajectory_indicator_type = 0
 supports_wobble = false
+supported_mods = 48
 retain_when_empty = false
 use_ammo = true
 current_ammo = 1

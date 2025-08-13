@@ -85,7 +85,6 @@ func _update_attributes(config: StoryRewardsConfig, stats: RoundStatTracker.Roun
 		push_error("No StoryRewardsConfig assigned!")
 		return
 	
-	#var stats : RoundStatTracker.RoundData = RoundStatTracker.round_data
 	if not stats:
 		push_error("No RoundStatTracker.RoundData!")
 		return
@@ -105,14 +104,16 @@ func _update_attributes(config: StoryRewardsConfig, stats: RoundStatTracker.Roun
 			print_debug("%s: Bonus scrap multiplier of %.2fx on win starting from %d scrap" % [name, bonus_scrap_multiplier, scrap_change])
 			scrap_change = ceilf(scrap_change * bonus_scrap_multiplier)
 	
-		if not SceneManager.story_level_state:
-			push_error("No scene level state!")
-			return
+		var run_count:int = 1
+		if SceneManager.story_level_state:
+			run_count = SceneManager.story_level_state.run_count
 		else:
-			var run_bonus_multiplier:float = config.calculate_run_bonus_multiplier(SceneManager.story_level_state.run_count)
-			print_debug("%s: Run bonus multiplier of %.2fx" % [name, run_bonus_multiplier])
-			personnel_change = ceili(personnel_change * run_bonus_multiplier)
-			scrap_change = ceilf(scrap_change * run_bonus_multiplier)
+			push_warning("No scene level state: Defaulting run count for bonus calculations to 1")
+
+		var run_bonus_multiplier:float = config.calculate_run_bonus_multiplier(run_count)
+		print_debug("%s: Run bonus multiplier of %.2fx" % [name, run_bonus_multiplier])
+		personnel_change = ceili(personnel_change * run_bonus_multiplier)
+		scrap_change = ceilf(scrap_change * run_bonus_multiplier)
 		
 		@warning_ignore_start("narrowing_conversion")
 		PlayerAttributes.personnel = maxi(PlayerAttributes.personnel + personnel_change, 0)
@@ -127,51 +128,6 @@ func _update_attributes(config: StoryRewardsConfig, stats: RoundStatTracker.Roun
 	SaveStateManager.save_tree_state(&"StoryLevelFinished")
 
 	_is_game_over = PlayerAttributes.personnel <= 0
-
-#func _calculate_scrap_bonus_multiplier() -> float:
-	#match _get_letter_grade(_grade):
-		#"A+": return 2.0
-		#"A": return 1.8
-		#"A-": return 1.6
-		#"B+": return 1.5
-		#"B": return 1.4
-		#"B-": return 1.3
-		#"C+": return 1.2
-		#"C" : return 1.1
-		#_: return 1.0
-
-#func _calculate_run_bonus_multiplier(run_count: int) -> float:
-	#var run_count:int = story_level_state.run_count
-	#if run_count <= 0:
-		#push_error("%s: Invalid run count %d" % [name, run_count])
-		#return 1.0
-#
-	#match run_count:
-		#1: return 1.0 # No bonus for first run
-		#2: return 1.25 # 25% bonus for second run
-		#3: return 1.375 #37.5% bonus for third run
-		#4: return 1.50 # 50% bonus for fourth run
-		#5: return 1.75 # 75% bonus for fifth run
-		#6: return 2.0 # 100% bonus for sixth run
-		#7: return 2.5 # 150% bonus for seventh run
-		#8: return 3.0 # 200% bonus for eighth run
-		#_: return (run_count - 8) * 0.25 + 3.0 # 25% bonus for each run after eighth run
-
-#func _calculate_personnel_change() -> int:
-	#var letter_grade:String = _get_letter_grade(_grade)
-#
-	#match letter_grade:
-		#"A+": return 3
-		#"A": return 2
-		#"A-": return 2
-		#"B+", "B", "B-": return 1
-		#"C+", "C", "C-": return 0 #C- is lowest win, anything lower is a loss
-		#"D+": return -1
-		#"D","D-": return -2
-		#"F" : return -3
-#
-	#push_error("%s: Unexpected letter grade %s - returning 0" % [name, letter_grade])
-	#return 0
 
 func _calculate_scrap_earned(config: StoryRewardsConfig, stats: RoundStatTracker.RoundData) -> float:
 	# Earn scrap for a full kill (player killed opponent and caused all the damage except for tank self damage)
@@ -287,7 +243,6 @@ func _calculate_grade(stats: RoundStatTracker.RoundData) -> int:
 	# If won look at damage ratio and take into account kills
 	# TODO: For miracle, track damage done and kills at low health - probably need to bracket into percentiles (not dictionary with float)
 	# That tracks damage_done and kills at each health level
-	#var stats : RoundStatTracker.RoundData = RoundStatTracker.round_data
 
 	# Damage to health lost ratio
 	var damage_to_health:float = stats.damage_done / maxf(stats.start_health - stats.final_health, 1.0)

@@ -45,7 +45,9 @@ func _on_scene_switched(_new_scene: Node) -> void:
 		# Still add a story level state so that state is initialized properly
 		if not _story_level_state_added:
 			if not is_instance_valid(_story_level_state):
-				_story_level_state = story_level_state_scene.instantiate()
+				_story_level_state = create_story_level_state()
+				
+			print_debug("%s: Add story level state as child" % name)
 			add_child(_story_level_state)
 			_story_level_state_added = true
 		return
@@ -54,26 +56,26 @@ func _on_scene_switched(_new_scene: Node) -> void:
 		_remove_story_state()
 	
 	# First add story level state
-	game_level.add_child(story_level_state_scene.instantiate())
+	game_level.add_child(create_story_level_state())
 	
 	print_debug("Applying story mode level modifiers to game_level=%s" % [game_level.scene_file_path])
 
 	var story_mode_level_modifiers:Node = story_mode_level_modifiers_scene.instantiate()
 	game_level.add_child(story_mode_level_modifiers)
 
+func create_story_level_state() -> StoryLevelState:
+	var story_level_state:StoryLevelState = story_level_state_scene.instantiate()
+	story_level_state.name = "StoryLevelState"
+	print_debug("%s: Creating story level state" % name)
+	
+	return story_level_state
+	
 func _remove_story_state() -> void:
 	if _story_level_state_added:
+		print_debug("%s: Remove story level state as child" % name)
 		remove_child(_story_level_state)
 		_story_level_state_added = false
 
 func _get_game_level() -> GameLevel:
-	#var nodes:Array[Node] = [scene]
-#
-	#while not nodes.is_empty():
-		#var node: Node = nodes.pop_back()
-		#if node is GameLevel:
-			#return node
-		#nodes.append_array(node.get_children())
-	#
-	#return null
-	return SceneManager.get_current_level_root()
+	# Avoid warning on SceneManager
+	return get_tree().get_first_node_in_group(Groups.GameLevel)

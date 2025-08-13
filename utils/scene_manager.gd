@@ -262,9 +262,9 @@ func unload_current_game_scene() -> void:
 	if not current_scene or current_scene == InternalSceneRoot:
 		push_error("No current scene to unload!")
 		return
-	current_scene.queue_free()
+	# Free immmediately to avoid race conditions with tree exit and loading of next scene
+	current_scene.free()
 	current_scene = null
-	# wait a frame?
 	
 func instantiate_scene_to_internal_root(scene: PackedScene) -> void:
 	if scene.can_instantiate() and InternalSceneRoot:

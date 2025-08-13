@@ -40,6 +40,8 @@ static func _static_init():
 		grade_to_letter[i] = grades[i]
 
 func _ready() -> void:
+	print_debug("StoryRoundSummary: _ready")
+	
 	var stats : RoundStatTracker.RoundData = RoundStatTracker.round_data
 	if not stats:
 		push_error("No RoundStatTracker.RoundData was recorded!")

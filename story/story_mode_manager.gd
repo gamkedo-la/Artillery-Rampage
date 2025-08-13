@@ -45,7 +45,7 @@ func _on_scene_switched(_new_scene: Node) -> void:
 		# Still add a story level state so that state is initialized properly
 		if not _story_level_state_added:
 			if not is_instance_valid(_story_level_state):
-				_story_level_state = create_story_level_state()
+				_story_level_state = create_story_level_state(&"NonGameLevel")
 				
 			print_debug("%s: Add story level state as child" % name)
 			add_child(_story_level_state)
@@ -56,17 +56,18 @@ func _on_scene_switched(_new_scene: Node) -> void:
 		_remove_story_state()
 	
 	# First add story level state
-	game_level.add_child(create_story_level_state())
+	game_level.add_child(create_story_level_state(&"GameLevel"))
 	
 	print_debug("Applying story mode level modifiers to game_level=%s" % [game_level.scene_file_path])
 
 	var story_mode_level_modifiers:Node = story_mode_level_modifiers_scene.instantiate()
 	game_level.add_child(story_mode_level_modifiers)
 
-func create_story_level_state() -> StoryLevelState:
+func create_story_level_state(name: StringName) -> StoryLevelState:
 	var story_level_state:StoryLevelState = story_level_state_scene.instantiate()
-	story_level_state.name = "StoryLevelState"
-	print_debug("%s: Creating story level state" % name)
+	if name:
+		story_level_state.name = name
+	print_debug("%s: Creating story level state: %s" % [name, story_level_state.name])
 	
 	return story_level_state
 	

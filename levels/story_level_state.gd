@@ -25,9 +25,11 @@ func _enter_tree() -> void:
 	_requires_restore = true
 	_dirty = false
 	GameEvents.story_level_changed.connect(_on_level_changed)
+	print_debug("StoryLevelState entered tree: %s" % name)
 
 func _exit_tree() -> void:
 	GameEvents.story_level_changed.disconnect(_on_level_changed)
+	print_debug("StoryLevelState exited tree: %s" % name)
 	
 func _on_level_changed(level:int) -> void:
 	print_debug("%s: level changed: %d" % [name, level])

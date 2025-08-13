@@ -63,10 +63,10 @@ func _on_scene_switched(_new_scene: Node) -> void:
 	var story_mode_level_modifiers:Node = story_mode_level_modifiers_scene.instantiate()
 	game_level.add_child(story_mode_level_modifiers)
 
-func create_story_level_state(name: StringName) -> StoryLevelState:
+func create_story_level_state(state_name: StringName) -> StoryLevelState:
 	var story_level_state:StoryLevelState = story_level_state_scene.instantiate()
-	if name:
-		story_level_state.name = name
+	if state_name:
+		story_level_state.name = state_name
 	print_debug("%s: Creating story level state: %s" % [name, story_level_state.name])
 	
 	return story_level_state
